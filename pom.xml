@@ -11,6 +11,7 @@
     <modules>
         <module>gmall0624-common</module>
         <module>gmall0624-mock</module>
+        <module>gmall0624-logger</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
