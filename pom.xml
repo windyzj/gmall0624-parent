@@ -13,6 +13,7 @@
         <module>gmall0624-mock</module>
         <module>gmall0624-logger</module>
         <module>gmall0624-realtime</module>
+        <module>gmall0624-canal</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
