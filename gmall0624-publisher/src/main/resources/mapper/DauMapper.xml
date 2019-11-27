@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atguigu.gmall0624.publisher.mapper.DauMapper">
+    <select id="getDauTotal" resultType="java.lang.Long">
+       select count(*) ct from gmall0624_dau where logdate=#{date}
+    </select>
+
+
+    <select id="getDauHour"  resultMap="dauResultMap">
+         select LOGHOUR, count(*) CT from gmall0624_dau
+         where LOGDATE=#{date}
+         group by LOGHOUR
+    </select>
+    <resultMap id="dauResultMap" type="java.util.Map">
+        <result property="loghour" column="LOGHOUR"></result>
+        <result property="ct" column="CT"></result>
+    </resultMap>
+</mapper>

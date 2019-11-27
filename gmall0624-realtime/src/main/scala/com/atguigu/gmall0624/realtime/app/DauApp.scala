@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSON
 import com.atguigu.gmall0624.bean.StartUpLog
 import com.atguigu.gmall0624.common.constant.GmallConstant
 import com.atguigu.gmall0624.realtime.util.MyKafkaUtil
+import org.apache.hadoop.conf.Configuration
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.spark.SparkConf
 import org.apache.spark.broadcast.Broadcast
@@ -15,6 +16,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.streaming.dstream.{DStream, InputDStream}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import redis.clients.jedis.Jedis
+import org.apache.phoenix.spark._
 
 object DauApp {
 
@@ -46,6 +48,8 @@ object DauApp {
 
       startUpLog
     }
+
+
 
    //driver
 
@@ -98,7 +102,13 @@ object DauApp {
     //保存
     // redis  type :set      key    dau:2019-11-26    value:  mid
     //set 的写入
+    filtered2Dstream.cache()
+
+
+
     filtered2Dstream.foreachRDD{rdd=>
+
+
       //driver
       rdd.foreachPartition{ startupLogItr=>
         // executor
@@ -113,6 +123,11 @@ object DauApp {
 
       }
 
+    }
+
+    filtered2Dstream.foreachRDD{rdd=>
+         //ctrl +shift +u 切换大小写
+      rdd.saveToPhoenix("GMALL0624_DAU",Seq("MID", "UID", "APPID", "AREA", "OS", "CH", "TYPE", "VS", "LOGDATE", "LOGHOUR", "TS"),new Configuration ,Some("hadoop1,hadoop2,hadoop3:2181"))
     }
 
 
