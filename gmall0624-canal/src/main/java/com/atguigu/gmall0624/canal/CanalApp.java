@@ -35,10 +35,10 @@ public class CanalApp {
                     e.printStackTrace();
                 }
             }else{
-                for (CanalEntry.Entry entry : message.getEntries()) {
+                for (CanalEntry.Entry entry : message.getEntries()) {  //entry 代表一条sql执行结果
                     if(entry.getEntryType().equals(CanalEntry.EntryType.ROWDATA)) { //只要数据相关处理
 
-                        ByteString storeValue = entry.getStoreValue();
+                        ByteString storeValue = entry.getStoreValue(); //storevalue序列化的数据集
                         CanalEntry.RowChange rowChange = null;
                         try {
                             rowChange = CanalEntry.RowChange.parseFrom(storeValue);  //反序列化
