@@ -1,8 +1,10 @@
 package com.atguigu.gmall0624.realtime.util
 
+import java.util
+
 import io.searchbox.client.config.HttpClientConfig
 import io.searchbox.client.{JestClient, JestClientFactory}
-import io.searchbox.core.{Bulk, Index}
+import io.searchbox.core.{Bulk, BulkResult, Index}
 
 object MyEsUtil {
 
@@ -54,19 +56,20 @@ object MyEsUtil {
     close(jest)*/
     //多条
     val stuList = List(("2",Stu(2,"li4",624)),("3",Stu(3,"wang5",624)),("4",Stu(4,"zhao6",624)))
-    insertBulk(stuList)
+    insertBulk("stu0624",stuList)
   }
 
 
-  def insertBulk(list:List[(String,Any)]): Unit ={
+  def insertBulk(indexName:String,list:List[(String,Any)]): Unit ={
     val jest: JestClient = getClient
 
     val bulkBuilder = new Bulk.Builder()
     for ( (id,doc) <- list ) {
-      val index: Index  = new Index.Builder(doc).index("stu0624").`type`("stu").id(id).build()
+      val index: Index  = new Index.Builder(doc).index(indexName).`type`("_doc").id(id).build()
       bulkBuilder.addAction(index)
     }
-    jest.execute(bulkBuilder.build())
+    val items: util.List[BulkResult#BulkResultItem] = jest.execute(bulkBuilder.build()).getItems
+    println("保存"+items.size()+"条到ES中")
     close(jest)
   }
 

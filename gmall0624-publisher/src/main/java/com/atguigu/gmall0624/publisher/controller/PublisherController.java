@@ -52,6 +52,8 @@ public class PublisherController {
 
     @GetMapping("realtime-hour")
     public String getRealtimeHour(@RequestParam("id") String id , @RequestParam("date") String td ){
+
+
         if(id.equals("dau")){  //跟id不同  取不同的分时图
             Map dauHourMapTD = publisherService.getDauHour(td);
             String yd = getYd(td);
