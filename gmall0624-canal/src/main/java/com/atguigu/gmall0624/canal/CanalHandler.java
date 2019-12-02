@@ -26,6 +26,10 @@ public class CanalHandler {
     public void handle(){
         if(tableName.equals("order_info")&&eventType.equals(CanalEntry.EventType.INSERT)){ //下单
             rowDateToKafka(GmallConstant.KAFKA_TOPIC_ORDER);
+        }else if(tableName.equals("order_detail")&&eventType.equals(CanalEntry.EventType.INSERT)){ //下单 明细
+            rowDateToKafka(GmallConstant.KAFKA_TOPIC_ORDER_DETAIL);
+        }else if(tableName.equals("user_info")&&(eventType.equals(CanalEntry.EventType.INSERT)||eventType.equals(CanalEntry.EventType.UPDATE) )) {
+            rowDateToKafka(GmallConstant.KAFKA_TOPIC_USER);
         }
 
 
@@ -40,6 +44,11 @@ public class CanalHandler {
             for (CanalEntry.Column column : afterColumnsList) {
                 System.out.println(column.getName()+"----->>"+column.getValue());
                 jsonObject.put(column.getName(),column.getValue());
+            }
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
             MyKafkaSender.send(topic,jsonObject.toJSONString());
 

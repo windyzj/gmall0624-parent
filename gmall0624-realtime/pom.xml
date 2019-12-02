@@ -72,7 +72,10 @@
         <artifactId>commons-compiler</artifactId>
         <version>2.7.8</version>
     </dependency>
-
+    <dependency>
+        <groupId>org.json4s</groupId>
+        <artifactId>json4s-native_2.11</artifactId>
+    </dependency>
 
 
 
