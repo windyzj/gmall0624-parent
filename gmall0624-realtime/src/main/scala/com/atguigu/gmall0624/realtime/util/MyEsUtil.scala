@@ -69,6 +69,7 @@ object MyEsUtil {
           val index: Index  = new Index.Builder(doc).index(indexName).`type`("_doc").id(id).build()
           bulkBuilder.addAction(index)
         }
+
         val items: util.List[BulkResult#BulkResultItem] = jest.execute(bulkBuilder.build()).getItems
         println("保存"+items.size()+"条到ES中")
         close(jest)

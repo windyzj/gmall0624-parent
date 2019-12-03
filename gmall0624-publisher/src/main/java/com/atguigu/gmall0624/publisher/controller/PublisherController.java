@@ -1,6 +1,9 @@
 package com.atguigu.gmall0624.publisher.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.atguigu.gmall0624.publisher.bean.Option;
+import com.atguigu.gmall0624.publisher.bean.SaleResult;
+import com.atguigu.gmall0624.publisher.bean.Stat;
 import com.atguigu.gmall0624.publisher.service.PublisherService;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,4 +97,64 @@ public class PublisherController {
         return null;
 
     }
+
+    @GetMapping("sale_detail")
+    public String getSaleDetail(@RequestParam("date") String date,@RequestParam("startpage")int pageNo, @RequestParam("size") int pageSize,@RequestParam("keyword") String keyword ){
+        Map resultMap = publisherService.getSaleDetail(date, keyword, pageNo, pageSize);
+        Long total =(Long)resultMap.get("total");
+        List<Map> detail =( List<Map>)resultMap.get("detail");
+        Map ageMap =( Map)resultMap.get("ageAgg");
+        Map genderMap   =( Map)resultMap.get("genderAgg");
+
+        Long age_20ct=0L;
+        Long age20_30ct=0L;
+        Long age30_ct=0L;
+        for (Object o : ageMap.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
+            String ageStr = (String)entry.getKey();
+            Long count = (Long)entry.getValue();
+            Integer age = Integer.valueOf(ageStr);
+            if(age>=30){
+                age30_ct+=count;
+            }else if(age<30&&age>=20){
+                age20_30ct+=count;
+            }else{
+                age_20ct+=count;
+            }
+
+        }
+        double age_20rt= Math.round(age_20ct*1000D/total)/10D;
+        double age20_30rt=Math.round(age20_30ct*1000D/total)/10D;
+        double age30_rt=Math.round(age30_ct*1000D/total)/10D;
+
+
+        List<Option> ageOptionList=new ArrayList<>();
+        ageOptionList.add( new Option("20岁以下",age_20rt)) ;
+        ageOptionList.add( new Option("20岁到30岁",age20_30rt)) ;
+        ageOptionList.add( new Option("30岁及以上",age30_rt)) ;
+
+        Stat ageStat = new Stat("年龄占比", ageOptionList);
+        long maleCt=genderMap.get("M")!=null?(Long)genderMap.get("M"):0 ;
+        long femaleCt=genderMap.get("F")!=null?(Long)genderMap.get("F"):0 ;
+
+
+
+        Double maleRt=Math.round(maleCt*1000D/total)/10D;
+        Double femaleRt=Math.round(femaleCt*1000D/total)/10D;
+
+        List<Option> genderOptionList=new ArrayList<>();
+        genderOptionList.add( new Option("男",maleRt)) ;
+        genderOptionList.add( new Option("女",femaleRt)) ;
+
+        Stat genderStat = new Stat("性别占比", genderOptionList);
+
+        List<Stat> statList=new ArrayList<>();
+        statList.add(ageStat);
+        statList.add(genderStat);
+
+        SaleResult saleResult = new SaleResult(total,statList,detail);
+        return   JSON.toJSONString(saleResult);
+    }
+
+
 }
